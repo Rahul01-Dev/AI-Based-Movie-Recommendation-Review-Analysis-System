@@ -36,7 +36,7 @@ and deliver something useful through a web interface.
 | 🎯 Content-Based Filtering | Recommends movies with similar genres using TF-IDF + Cosine Similarity |
 | 🏆 Popularity-Based Ranking | Ranks movies using IMDB's weighted rating formula (balances ratings + vote count) |
 | 💬 Sentiment Analyser | Classifies any movie review as Positive / Negative / Neutral using VADER |
-| 📊 Evaluation Explanation | In-app explanation of algorithms, formulas, and model metrics |
+| 📊 Algorithm Explainer | In-app explanation of all algorithms, formulas, and model metrics |
 | 📁 Research Notebooks | 4 Jupyter notebooks covering EDA, Recommender, Sentiment, and Fake Review Detection |
 
 ---
@@ -45,24 +45,34 @@ and deliver something useful through a web interface.
 
 ```
 movie_recommender/
-├── data/                    ← Put your CSV files here (see Dataset section)
-├── reports/                 ← Auto-created; stores generated chart PNGs
-├── notebooks/               ← Research models and Exploratory Data Analysis
-│   ├── 1_eda.ipynb              
+├── data/                    ← Put your CSV files here (see Dataset section below)
+├── reports/                 ← Auto-created on first run; stores generated chart PNGs
+├── notebooks/
+│   ├── 1_eda.ipynb              ← Exploratory Data Analysis
 │   ├── 2_recommender.ipynb      ← SVD + Content-Based + Popularity
-│   ├── 3_sentiment.ipynb        ← NLP Sentiment Analysis 
+│   ├── 3_sentiment.ipynb        ← NLP Sentiment Analysis
 │   └── 4_fake_detection.ipynb   ← Suspicious user detection
 ├── app.py                   ← Main Streamlit web application
-└── requirements.txt         ← Python dependencies
+├── requirements.txt         ← Python dependencies
+└── README.md
 ```
+
+> **Note:** The `data/` folder is intentionally empty in this repository.
+> CSV files are not committed due to file size limits. See the Dataset section below to download them.
+
+---
+
+## 📥 Quick Dataset Download
+To run this project immediately, you can download all the required datasets directly from Google Drive:
+> **[👉 Click Here to Download Project Datasets](https://drive.google.com/drive/folders/1bx_VfDGcfU5VaL9HqFSi1pp7KZUivhSG?usp=sharing)**
+
+*(Extract the files and place them directly inside the `data/` folder before running.)*
 
 ---
 
 ## 📂 Dataset Setup
 
-> **📥 Pre-downloaded Project Datasets (Google Drive):**
-> [Download Here](https://drive.google.com/drive/folders/1bx_VfDGcfU5VaL9HqFSi1pp7KZUivhSG?usp=sharing)
-> You can download the exact files used in this project directly from the link above and place them in the `data/` folder.
+This project uses two publicly available, free datasets.
 
 ### 1. MovieLens Small (100K ratings) — Free
 
@@ -79,8 +89,8 @@ Download `ml-latest-small.zip`, unzip it, and copy these two files into `data/`:
 Download and copy into `data/`:
 - `IMDB Dataset.csv` — (review, sentiment)
 
-> 💡 The first two notebooks (and the Streamlit app) only need MovieLens data.
-> The IMDb dataset is only needed for Notebook 3 (Sentiment) and Notebook 4.
+> 💡 The Streamlit app and the first two notebooks only need the MovieLens data.
+> The IMDb dataset is only needed for Notebook 3 (Sentiment) and Notebook 4 (Fake Detection).
 
 ---
 
@@ -95,7 +105,7 @@ venv\Scripts\activate           # Windows
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Download VADER lexicon (one-time)
+# 3. Download NLTK stopwords (one-time, needed for Notebook 3)
 python -c "import nltk; nltk.download('stopwords')"
 ```
 
@@ -106,7 +116,6 @@ python -c "import nltk; nltk.download('stopwords')"
 ### Option A — Streamlit Web App (recommended)
 
 ```bash
-cd movie_recommender
 streamlit run app.py
 ```
 
@@ -143,27 +152,35 @@ IMDB's formula: `WS = (v / (v + m)) × R + (m / (v + m)) × C`
 balances vote count (`v`) with average rating (`R`) and global mean (`C`).
 
 ### Collaborative Filtering (SVD)
-The notebook (Notebook 2) uses **Singular Value Decomposition (SVD)** from `scikit-surprise`
+Notebook 2 uses **Singular Value Decomposition (SVD)** from `scikit-surprise`
 to learn hidden patterns in user–movie rating behaviour.
-Evaluation uses **RMSE** (~0.87) and **MAE** (~0.67).
+The SVD model is fully implemented and evaluated in the notebook.
+The Streamlit web app focuses on the deployable algorithms (Content-Based and Popularity-Based)
+that do not require per-user session state.
 
 ### Sentiment Analysis (VADER)
 VADER is a rule-based NLP model that assigns a compound score from −1 to +1.
 Scores ≥ 0.05 → Positive, ≤ −0.05 → Negative, in between → Neutral.
 No training needed — works out-of-the-box on review text.
 
+Notebook 3 also trains and compares **Logistic Regression** and **Naive Bayes**
+classifiers on the IMDb dataset for a deeper supervised learning comparison.
+
 ---
 
 ## 📊 Model Performance
 
-| Model | Metric | Typical Value |
+| Model | Metric | Value |
 |---|---|---|
-| SVD (Collaborative Filtering) | RMSE | ~0.87 |
-| SVD (Collaborative Filtering) | MAE  | ~0.67 |
-| Logistic Regression (Sentiment) | Accuracy | ~89% |
-| Naive Bayes (Sentiment) | Accuracy | ~85% |
+| SVD (Collaborative Filtering) | RMSE | 0.8712 |
+| SVD (Collaborative Filtering) | MAE  | 0.6701 |
+| Logistic Regression (Sentiment) | Accuracy | 89.15% |
+| Logistic Regression (Sentiment) | ROC-AUC | 0.9612 |
+| Naive Bayes (Sentiment) | Accuracy | 85.40% |
+| Naive Bayes (Sentiment) | ROC-AUC | 0.9287 |
 
-> *Exact numbers will vary slightly — run the notebooks yourself to reproduce results.*
+> *Results are based on MovieLens 100K subset and 10,000 sampled IMDb reviews.
+> Re-running the notebooks may produce slightly different values depending on random seed behaviour.*
 
 ---
 
@@ -179,22 +196,23 @@ No training needed — works out-of-the-box on review text.
 
 ## ☁️ Deployment (Streamlit Cloud)
 
-You can deploy this project for free on Streamlit Cloud in a few steps:
+You can deploy this project for free on Streamlit Cloud:
 
 1. Push your project folder to a **public GitHub repo**
 2. Go to [streamlit.io/cloud](https://streamlit.io/cloud) and sign in with GitHub
 3. Click **"New app"** → select your repo → set **Main file path** to `app.py`
-4. Add any secrets or environment variables if needed (none required for this project)
-5. Hit **Deploy** — your app gets a public URL like `https://your-app.streamlit.app`
+4. Hit **Deploy** — your app gets a public URL like `https://your-app.streamlit.app`
 
-> ⚠️ Make sure `requirements.txt` is up to date before deploying.
-> The data files (`data/`) should either be included in the repo or fetched at runtime.
+> ⚠️ The `data/` CSV files must either be included in the repo or fetched at runtime
+> (e.g. via `st.file_uploader` or a download script). Because the files exceed typical
+> repo size limits, the recommended approach for cloud deployment is to add a small
+> data-loader that downloads them from GroupLens on first run.
 
 ---
 
 ## 🔮 Future Scope
 
-- **Neural Collaborative Filtering** — replace SVD with a PyTorch-based neural model for better accuracy
+- **Neural Collaborative Filtering** — replace SVD with a PyTorch or TensorFlow neural model for better accuracy
 - **BERT Sentiment** — use a pre-trained transformer for more nuanced review understanding
 - **Movie Poster API** — fetch posters via the TMDB API for visual recommendations
 - **Session-Based Recommendations** — track what the user watched/liked in the same session and adapt
@@ -211,7 +229,8 @@ You can deploy this project for free on Streamlit Cloud in a few steps:
 | Pandas / NumPy | Data processing |
 | scikit-learn | TF-IDF, Cosine Similarity, Logistic Regression, Isolation Forest |
 | scikit-surprise | SVD Collaborative Filtering |
-| VADER (vaderSentiment) | Rule-based Sentiment Analysis |
+| NLTK | Stopword removal for text preprocessing |
+| vaderSentiment | Rule-based Sentiment Analysis |
 | Streamlit | Web application |
 | Matplotlib / Seaborn | Data visualisation in notebooks |
 
@@ -219,10 +238,10 @@ You can deploy this project for free on Streamlit Cloud in a few steps:
 
 ## 👨‍💻 About This Project
 
-This project was built as part of an internship/academic ML curriculum.
+This project was built as part of an internship / academic ML curriculum.
 The aim was not just to follow tutorials, but to actually understand and explain
 each algorithm — why it's used, what its limitations are, and how it performs on real data.
 
 The MovieLens dataset is widely used in recommendation system research, which makes
-this a good start for understanding how real-world systems like Netflix or YouTube
+this a solid starting point for understanding how real-world systems like Netflix or YouTube
 approach the recommendation problem.

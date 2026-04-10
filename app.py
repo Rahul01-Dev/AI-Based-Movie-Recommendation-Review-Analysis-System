@@ -6,6 +6,12 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import os
+
+if not os.path.exists("data/ratings.csv") or not os.path.exists("data/movies.csv"):
+    st.error("⚠️ Data files missing! Please download them from the Google Drive link in the README and place them in the `data/` folder.")
+    st.stop()
+
 
 # ── page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
