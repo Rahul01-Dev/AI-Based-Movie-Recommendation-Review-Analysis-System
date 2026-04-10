@@ -1,0 +1,4 @@
+# Place your dataset files here:
+# - ratings.csv       (from MovieLens Small: https://grouplens.org/datasets/movielens/latest/)
+# - movies.csv        (from MovieLens Small)
+# - IMDB Dataset.csv  (from Kaggle: https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews)
