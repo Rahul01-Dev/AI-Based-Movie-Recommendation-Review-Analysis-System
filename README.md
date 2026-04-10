@@ -5,6 +5,14 @@
 
 ---
 
+## 📥 Quick Dataset Download
+To run this project immediately, you can download all the required datasets directly from Google Drive:
+> **[👉 Click Here to Download Project Datasets](https://drive.google.com/drive/folders/1bx_VfDGcfU5VaL9HqFSi1pp7KZUivhSG?usp=sharing)**
+
+*(Extract the files and place them directly inside the `data/` folder before running.)*
+
+---
+
 ## 📌 Problem Statement
 
 People spend a surprising amount of time just deciding *what* to watch.
@@ -51,6 +59,10 @@ movie_recommender/
 ---
 
 ## 📂 Dataset Setup
+
+> **📥 Pre-downloaded Project Datasets (Google Drive):**
+> [Download Here](https://drive.google.com/drive/folders/1bx_VfDGcfU5VaL9HqFSi1pp7KZUivhSG?usp=sharing)
+> You can download the exact files used in this project directly from the link above and place them in the `data/` folder.
 
 ### 1. MovieLens Small (100K ratings) — Free
 
